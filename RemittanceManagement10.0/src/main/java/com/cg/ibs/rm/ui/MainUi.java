@@ -292,17 +292,25 @@ public class MainUi {
 			}
 			break;
 		case 2:
-			BigInteger accountNumberToModify;
+			String accountNumberToModify = null;
 			if (1 != count1) {
 				int count5;
 				int choiceToModify;
 				do {
+					boolean valid11 = false;
+					do {
 					System.out.println("\nPlease enter a valid account number");
-					accountNumberToModify = scanner.nextBigInteger();
+					try {
+					accountNumberToModify = keyboardInput.readLine();
+					valid11 = beneficiaryAccountService.validateBeneficiaryAccountNumber(accountNumberToModify);
+					} catch (IOException exception) {
+						System.out.println(exception.getMessage());
+					}
+					}while(valid11);
 					count5 = 0;
 					try {
 						for (Beneficiary beneficiary : beneficiaryAccountService.showBeneficiaryAccount(uci)) {
-							if (beneficiary.getAccountNumber().equals(accountNumberToModify)) {
+							if (beneficiary.getAccountNumber().equals(new BigInteger(accountNumberToModify))) {
 								count5++;
 							}
 						}
@@ -370,7 +378,7 @@ public class MainUi {
 						break;
 					case 4:
 						try {
-							beneficiaryAccountService.modifyBeneficiaryAccountDetails(uci, accountNumberToModify,
+							beneficiaryAccountService.modifyBeneficiaryAccountDetails(uci, new BigInteger(accountNumberToModify),
 									beneficiary);
 							System.out.println("\nModified beneficiary details are gone for approval.");
 						} catch (IBSExceptions | SQLException | IOException exception) {
@@ -392,11 +400,20 @@ public class MainUi {
 			}
 			break;
 		case 3:
+			String deleteAccountNum = null;
+			boolean valid12 = false;
 			if (1 != count1) {
-				System.out.println("Enter the account number to be deleted.");
-				BigInteger deleteAccountNum = scanner.nextBigInteger();
+				do {
+				System.out.println("Enter a valid account number to be deleted.");
 				try {
-					beneficiaryAccountService.deleteBeneficiaryAccountDetails(uci, deleteAccountNum);
+					deleteAccountNum = keyboardInput.readLine();
+				valid12 = beneficiaryAccountService.validateBeneficiaryAccountNumber(deleteAccountNum);
+				} catch (IOException exception) {
+					System.out.println(exception.getMessage());
+				}
+				}while(valid12);
+				try {
+					beneficiaryAccountService.deleteBeneficiaryAccountDetails(uci, new BigInteger(deleteAccountNum));
 					System.out.println("Account deleted Successfully");
 				} catch (IBSExceptions exception) {
 					System.out.println(exception.getMessage());
